@@ -61,7 +61,7 @@
 /// Types MAY implement `Drop` to call `zeroize()` as defense-in-depth, but
 /// this should not be the primary zeroization mechanism.
 
-use crate::r#unsafe::zeroize_slice;
+use crate::r#unsafe::memory::zeroize_slice;
 
 pub trait SecureMemory {
     /// Securely overwrite this value's memory with zeros.
@@ -93,13 +93,17 @@ pub trait SecureMemory {
 // Implement SecureMemory for common sensitive types
 impl SecureMemory for [u8; 32] {
     fn zeroize(&mut self) {
-        zeroize_slice(self);
+        unsafe {
+            zeroize_slice(self);
+        }
     }
 }
 
 impl SecureMemory for Vec<u8> {
     fn zeroize(&mut self) {
-        zeroize_slice(self.as_mut_slice());
+        unsafe {
+            zeroize_slice(self.as_mut_slice());
+        }
     }
 }
 
@@ -109,7 +113,9 @@ macro_rules! impl_secure_memory_array {
         $(
             impl SecureMemory for [u8; $N] {
                 fn zeroize(&mut self) {
-                    zeroize_slice(self);
+                    unsafe {
+                        zeroize_slice(self);
+                    }
                 }
             }
         )+
@@ -128,7 +134,9 @@ mod tests {
     #[test]
     fn zeroize_slice_works() {
         let mut data = [0x42u8; 32];
-        zeroize_slice(&mut data);
+        unsafe {
+            zeroize_slice(&mut data);
+        }
         assert_eq!(&data, &[0u8; 32]);
     }
 
