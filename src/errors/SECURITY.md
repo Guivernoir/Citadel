@@ -282,7 +282,7 @@ Last security review: 01/01/2026
 If you discover a security issue in the error module:
 
 1. **DO NOT** open a public issue
-2. Email security@example.com with details
+2. Email strukturaenterprise@gmail.com with details
 3. Include:
    - Description of the information leak
    - Attack scenario
